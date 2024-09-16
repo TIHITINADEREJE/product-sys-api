@@ -6,8 +6,14 @@
 	<artifactId>sys-api-product</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
-
 	<name>sys-api-product</name>
+	
+	<parent>
+		<groupId>87760b6e-4fa6-4357-a6ee-536c409c6099</groupId>
+		<artifactId>parent-pom</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../parent-pom/pom.xml</relativePath>
+	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,19 +43,16 @@
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-http-connector</artifactId>
-			<version>1.8.0</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.connectors</groupId>
 			<artifactId>mule-sockets-connector</artifactId>
-			<version>1.2.3</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.mule.modules</groupId>
 			<artifactId>mule-apikit-module</artifactId>
-			<version>1.9.2</version>
 			<classifier>mule-plugin</classifier>
 		</dependency>
 		<dependency>
