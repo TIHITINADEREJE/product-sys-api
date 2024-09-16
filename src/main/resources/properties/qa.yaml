@@ -1,0 +1,15 @@
+http:
+  host : "0.0.0.0"
+  port : "8081"
+  path: "/api/*"
+  readTimeout : "30000"
+sf:
+  userName : "tihitinaderejeshewakena-yqhy@force.com"
+  password : "0909704209Gt#1"
+  securityToken: "gxUocqkjWNuhfBom8gjMb3Wk"
+  authorizationURL : "https://login.salesforce.com/services/Soap/u/60.0"
+  
+field: 
+  lead: "Id, Name, Phone, Email, Company, Title, LastModifiedDate, Address, IsDeleted, IsConverted, CreatedDate, Country"
+
+  

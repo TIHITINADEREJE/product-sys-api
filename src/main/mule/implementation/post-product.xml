@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="post-productFlow" doc:id="8b6fecf3-6f4f-40e6-b127-6717851c0049" >
+		<logger level="INFO" doc:name="Before salesforce" doc:id="1bc31591-7a8b-491c-ab95-ad6169a06820" message="Before salesforce" />
+		<ee:transform doc:name="Transform Message" doc:id="12bb7a75-87d5-4ef5-b06e-a06279a28aa3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload map (data, index) ->
+{
+	"Id" : data.Id,
+	"ProductCode": data."Product Code",
+    "Family" : data."Product Family",
+    "Description": data."Product Description",
+    "Name" : data."Product Name"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:upsert objectType="Product2" externalIdFieldName="Id" doc:name="Upsert" doc:id="bd037684-0b5c-4859-b56b-63de488c99f1" config-ref="product_salesforce_Config" />
+		<logger level="INFO" doc:name="After salesforce" doc:id="209883bb-5aeb-45ea-ab8e-e9c8838b77d2" message="After salesforce" />
+		<ee:transform doc:name="Transform Message" doc:id="02e38efb-731d-474b-bbb4-a13533b7a185" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+var response = payload.items[0]
+---
+[
+    {
+        "created": response.payload.created,
+        "success": response.payload.success,
+        "id": response.payload.id,
+        "errors": response.statusCode
+    }
+]]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="statusCode" ><![CDATA[%dw 2.0
+output application/java
+var response = payload.items[0]
+---
+if ((response.payload.created is true) and response.payload.success is true) 201 
+else if ((response.payload.created is false) and response.payload.success is true) 200
+else 500 ]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>
