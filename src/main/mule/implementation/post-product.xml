@@ -7,15 +7,28 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
 	<flow name="post-productFlow" doc:id="8b6fecf3-6f4f-40e6-b127-6717851c0049" >
 		<logger level="INFO" doc:name="Before salesforce" doc:id="1bc31591-7a8b-491c-ab95-ad6169a06820" message="Before salesforce" />
-		<ee:transform doc:name="Transform Message" doc:id="12bb7a75-87d5-4ef5-b06e-a06279a28aa3" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		<salesforce:query doc:name="Query" doc:id="b873ddc8-ced3-4acd-bc67-e8d428c78951" config-ref="product_salesforce_Config" target="StockKeepingUnit" targetValue="#[payload[0].StockKeepingUnit]">
+			<salesforce:salesforce-query><![CDATA[SELECT StockKeepingUnit FROM Product2 where Name = :Name and  Description = :Description and ProductCode = :ProductCode and Family = :Family]]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+	"ProductCode": "'" ++ payload[0]."Product Code" ++ "'",
+    "Description": "'" ++ payload[0]."Product Description" ++ "'",
+    "Name" : "'" ++ payload[0]."Product Name" ++ "'",
+    "Family" : "'" ++ payload[0]."Product Family"++ "'"
+}]]]></salesforce:parameters>
+		</salesforce:query>
+		<ee:transform doc:name="Transform Message" doc:id="12bb7a75-87d5-4ef5-b06e-a06279a28aa3">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
 payload map (data, index) ->
 {
 	"Id" : data.Id,
 	"ProductCode": data."Product Code",
+	"StockKeepingUnit" : if (vars.StockKeepingUnit != null) vars.StockKeepingUnit else uuid() replace "-" with "",
     "Family" : data."Product Family",
     "Description": data."Product Description",
     "Name" : data."Product Name"
@@ -30,14 +43,13 @@ payload map (data, index) ->
 output application/json
 var response = payload.items[0]
 ---
-[
-    {
-        "created": response.payload.created,
-        "success": response.payload.success,
-        "id": response.payload.id,
-        "errors": response.statusCode
-    }
-]]]></ee:set-payload>
+if ((response.payload.created is true) and response.payload.success is true) {message : "Item successfully created",
+	Id : response.payload.Id
+} 
+else if ((response.payload.created is false) and response.payload.success is true) {message : "Item successfully updated",
+	Id : response.payload.Id
+} 
+else {message : response.statusCode} ]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="statusCode" ><![CDATA[%dw 2.0
