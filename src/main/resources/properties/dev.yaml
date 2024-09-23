@@ -4,12 +4,10 @@ http:
   path: "/api/*"
   readTimeout : "30000"
 sf:
-  userName : "tihitinaderejeshewakena-yqhy@force.com"
+  userName : "tihitinadereje@gmail.com"
   password : "0909704209Gt#1"
-  securityToken: "gxUocqkjWNuhfBom8gjMb3Wk"
+  securityToken: "pBDRkPCKk5Yqnxh2KZ11Zflc"
   authorizationURL : "https://login.salesforce.com/services/Soap/u/60.0"
   
 field: 
   lead: "LastModifiedDate,IsDeleted,Description,ProductCode,Name,QuantityUnitOfMeasure,StockKeepingUnit,CreatedDate,Family,Id"
-
-  
