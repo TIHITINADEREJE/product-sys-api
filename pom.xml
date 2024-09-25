@@ -6,8 +6,7 @@
 	<artifactId>sys-api-product</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
-	<name>sys-api-product</name>
-	
+	<name>product-sys-api</name>
 	<parent>
 		<groupId>87760b6e-4fa6-4357-a6ee-536c409c6099</groupId>
 		<artifactId>parent-pom</artifactId>
