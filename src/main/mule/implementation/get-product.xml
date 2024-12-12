@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-productFlow" doc:id="40b2bdba-f8d2-42af-8495-e758d1fca309" >
+		<logger level="INFO" doc:name="Before salesforce" doc:id="4ad7ed12-ce79-46dc-ac4e-73dfeff12791" message="Before salesforce" />
+		<ee:transform doc:name="Transform Message" doc:id="4ba29dff-aea2-4a95-8213-937592afc39e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+if (vars.Id != null)"SELECT" ++ " " ++ vars.field ++ " " ++ "FROM Product2 where Id =" ++ " " ++ vars.Id
+else "SELECT" ++ " " ++ vars.field ++ " " ++ "FROM Product2"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<salesforce:query doc:name="Query" doc:id="d8f344e3-7634-4cbc-b2a1-b192cbb75fbd" config-ref="product_salesforce_Config" >
+			<salesforce:salesforce-query ><![CDATA[#[payload]]]></salesforce:salesforce-query>
+		</salesforce:query>
+		<logger level="INFO" doc:name="After salesforce" doc:id="4e8aff68-2ca0-4eea-89e6-fe8f047d7801" message="After salesforce" />
+		<choice doc:name="Choice" doc:id="d3912fb9-1b66-4228-bfdf-5b24e1e6b0bf" >
+			<when expression="#[sizeOf(payload) != 0]" >
+				<ee:transform doc:name="response" doc:id="87563e71-34ec-40d5-b520-5965ab1b8747" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="response" doc:id="d449b497-47c9-469f-bf3b-8f56f60935ee" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"No record found in Salesforce"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

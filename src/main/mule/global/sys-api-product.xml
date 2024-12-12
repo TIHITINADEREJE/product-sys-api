@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="sys-api-product-main">
+        <http:listener config-ref="sys-api-product-httpListenerConfig" path="${http.path}">
+            <http:response statusCode="#[vars.statusCode default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <logger level="INFO" doc:name="Enttry logger" doc:id="65a49ed1-065a-4f77-aa2c-29f83dcf41a4" message="Enttry logger"/>
+		<apikit:router config-ref="sys-api-product-config" />
+		<error-handler ref="globalErrorHandler" />
+    </flow>
+    <flow name="sys-api-product-console">
+        <http:listener config-ref="sys-api-product-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="sys-api-product-config" />
+		<error-handler ref="globalErrorHandler" />
+    </flow>
+    <flow name="get:\product:sys-api-product-config">
+		<ee:transform doc:name="query" doc:id="eb6c2798-26a0-4d62-82e0-aab28a866d52" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="field" ><![CDATA[p('field.lead')]]></ee:set-variable>
+				<ee:set-variable variableName="Id" ><![CDATA[attributes.queryParams.Id]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="get-productFlow" doc:id="fc3edf47-c50c-4ffa-9584-d2c324ccf649" name="get-productFlow" />
+    </flow>
+    <flow name="post:\product:application\json:sys-api-product-config">
+        <flow-ref doc:name="post-productFlow" doc:id="ddd7cad7-6ea9-45d9-a549-9e74448a08ff" name="post-productFlow"/>
+    </flow>
+</mule>

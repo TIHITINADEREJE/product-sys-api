@@ -1,0 +1,28 @@
+%dw 2.0
+
+type auto_40b2bdba_f8d2_42af_8495_e758d1fca309_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|
+    "Product Name"?: String, 
+    "Product Family"?: String, 
+    "Product Code"?: String, 
+    "Product Description"?: String
+  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+

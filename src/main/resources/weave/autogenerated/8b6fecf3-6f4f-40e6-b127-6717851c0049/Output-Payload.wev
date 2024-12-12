@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_8b6fecf3_6f4f_40e6_b127_6717851c0049_Output_Payload = Array<{|  created: Boolean {"typeId": "boolean"} | Null,   success: Boolean {"typeId": "boolean"} | Null,   id: String | Null,   errors: String | Null|}>
+
